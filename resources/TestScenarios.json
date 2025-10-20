@@ -1,0 +1,154 @@
+{
+  "description": "Test scenario file for custom electrode sequences",
+  "version": "1.0",
+  "scenarios": [
+    {
+      "name": "PCR_Cycle_Example",
+      "description": "Example PCR cycle with custom electrode activation",
+      "steps": [
+        {
+          "phase": "denaturation",
+          "electrodes": [1, 5, 10, 15, 20, 25, 30, 35, 40],
+          "state": "high",
+          "duration_ms": 30000,
+          "comment": "Activate heating electrodes for 30 seconds at 95°C"
+        },
+        {
+          "phase": "annealing",
+          "electrodes": [2, 7, 12, 17, 22, 27, 32, 37, 42],
+          "state": "high",
+          "duration_ms": 30000,
+          "comment": "Annealing phase for 30 seconds at 60°C"
+        },
+        {
+          "phase": "extension",
+          "electrodes": [3, 8, 13, 18, 23, 28, 33, 38, 43],
+          "state": "high",
+          "duration_ms": 60000,
+          "comment": "Extension phase for 60 seconds at 72°C"
+        }
+      ],
+      "cycles": 25,
+      "cycle_delay_ms": 1000
+    },
+    {
+      "name": "Fluid_Mixing_Example",
+      "description": "Custom mixing pattern for microfluidics",
+      "steps": [
+        {
+          "phase": "mixing_1",
+          "electrodes": [50, 51, 52, 64, 65, 66],
+          "state": "high",
+          "duration_ms": 2000,
+          "comment": "Activate mixing zone 1"
+        },
+        {
+          "phase": "mixing_2",
+          "electrodes": [70, 71, 72, 84, 85, 86],
+          "state": "high",
+          "duration_ms": 2000,
+          "comment": "Activate mixing zone 2"
+        },
+        {
+          "phase": "all_off",
+          "electrodes": [50, 51, 52, 64, 65, 66, 70, 71, 72, 84, 85, 86],
+          "state": "low",
+          "duration_ms": 500,
+          "comment": "Deactivate all electrodes"
+        }
+      ],
+      "cycles": 5,
+      "cycle_delay_ms": 500
+    },
+    {
+      "name": "Fluid_Transport_Example",
+      "description": "Sequential electrode activation for fluid transport",
+      "steps": [
+        {
+          "phase": "step_1",
+          "electrodes": [1],
+          "state": "high",
+          "duration_ms": 500
+        },
+        {
+          "phase": "step_2",
+          "electrodes": [2],
+          "state": "high",
+          "duration_ms": 500
+        },
+        {
+          "phase": "step_3",
+          "electrodes": [3],
+          "state": "high",
+          "duration_ms": 500
+        },
+        {
+          "phase": "step_4",
+          "electrodes": [4],
+          "state": "high",
+          "duration_ms": 500
+        },
+        {
+          "phase": "cleanup",
+          "electrodes": [1, 2, 3, 4],
+          "state": "low",
+          "duration_ms": 100
+        }
+      ],
+      "cycles": 1,
+      "cycle_delay_ms": 0
+    },
+    {
+      "name": "Custom_PCR_Profile",
+      "description": "Advanced PCR with multiple temperature zones",
+      "steps": [
+        {
+          "phase": "initial_denaturation",
+          "electrodes": [10, 20, 30, 40, 50, 60, 70, 80],
+          "state": "high",
+          "duration_ms": 120000,
+          "comment": "Initial denaturation 2 minutes"
+        },
+        {
+          "phase": "cycle_denaturation",
+          "electrodes": [10, 20, 30, 40],
+          "state": "high",
+          "duration_ms": 15000,
+          "comment": "Cycle denaturation 15 seconds"
+        },
+        {
+          "phase": "annealing",
+          "electrodes": [15, 25, 35, 45],
+          "state": "high",
+          "duration_ms": 30000,
+          "comment": "Annealing 30 seconds"
+        },
+        {
+          "phase": "extension",
+          "electrodes": [50, 60, 70, 80],
+          "state": "high",
+          "duration_ms": 45000,
+          "comment": "Extension 45 seconds"
+        },
+        {
+          "phase": "cooldown",
+          "electrodes": [10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80],
+          "state": "low",
+          "duration_ms": 1000
+        }
+      ],
+      "cycles": 35,
+      "cycle_delay_ms": 2000
+    }
+  ],
+  "notes": [
+    "Electrode numbers range from 1 to 140",
+    "duration_ms is in milliseconds",
+    "state can be 'high' or 'low'",
+    "cycles determines how many times the sequence repeats",
+    "cycle_delay_ms is the delay between cycle repetitions",
+    "Each step activates the specified electrodes for the given duration",
+    "Electrodes are NOT geometrically arranged - numbering is arbitrary based on PCIE pin mapping"
+  ]
+}
+

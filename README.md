@@ -500,8 +500,8 @@ Edit `resources/PinMap.json` to match your board layout:
 
 ### Control Logic
 
-**Electrode HIGH:** Row = HIGH, Column = LOW  
-**Electrode LOW:** Row = LOW, Column = HIGH
+**Electrode HIGH:** Row = LOW, Column = HIGH  
+**Electrode LOW:** Row = HIGH, Column = LOW
 
 This active matrix scheme allows independent control of all 140 electrodes using only 24 GPIO pins (10 rows + 14 columns).
 
@@ -509,8 +509,9 @@ This active matrix scheme allows independent control of all 140 electrodes using
 
 GPIO state changes use BSRR (Bit Set/Reset Register) for atomic simultaneous control:
 ```cpp
-rowPins[row].port->BSRR = rowPins[row].pin;              // Set row
-colPins[col].port->BSRR = (uint32_t)colPins[col].pin << 16U;  // Reset column
+// To turn electrode HIGH (Row LOW, Column HIGH)
+rowPins[row].port->BSRR = (uint32_t)rowPins[row].pin << 16U;  // Reset row (LOW)
+colPins[col].port->BSRR = colPins[col].pin;                   // Set column (HIGH)
 ```
 
 This ensures minimal delay between row and column transitions (sub-microsecond).

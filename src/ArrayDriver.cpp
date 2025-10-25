@@ -69,18 +69,18 @@ void ArrayDriver::init() {
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     
-    // Initialize rows
+    // Initialize rows - set HIGH for initial LOW electrode state
     for (uint8_t i = 0; i < NUM_ROWS; i++) {
         GPIO_InitStruct.Pin = rowPins[i].pin;
         HAL_GPIO_Init(rowPins[i].port, &GPIO_InitStruct);
-        HAL_GPIO_WritePin(rowPins[i].port, rowPins[i].pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(rowPins[i].port, rowPins[i].pin, GPIO_PIN_SET);
     }
     
-    // Initialize columns
+    // Initialize columns - set LOW for initial LOW electrode state
     for (uint8_t i = 0; i < NUM_COLS; i++) {
         GPIO_InitStruct.Pin = colPins[i].pin;
         HAL_GPIO_Init(colPins[i].port, &GPIO_InitStruct);
-        HAL_GPIO_WritePin(colPins[i].port, colPins[i].pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(colPins[i].port, colPins[i].pin, GPIO_PIN_RESET);
     }
     
     // Set all electrodes to low state
@@ -110,15 +110,15 @@ inline void ArrayDriver::setRowColAtomic(uint8_t row, uint8_t col, bool state) {
     __disable_irq();
     
     if (state) {
-        // To drive electrode HIGH: Row HIGH, Column LOW
-        // Use BSRR register for atomic simultaneous operation
-        rowPins[row].port->BSRR = rowPins[row].pin;  // Set row high
-        colPins[col].port->BSRR = (uint32_t)colPins[col].pin << 16U;  // Reset column (set low)
-    } else {
-        // To drive electrode LOW: Row LOW, Column HIGH
+        // To drive electrode HIGH: Row LOW, Column HIGH
         // Use BSRR register for atomic simultaneous operation
         rowPins[row].port->BSRR = (uint32_t)rowPins[row].pin << 16U;  // Reset row (set low)
         colPins[col].port->BSRR = colPins[col].pin;  // Set column high
+    } else {
+        // To drive electrode LOW: Row HIGH, Column LOW
+        // Use BSRR register for atomic simultaneous operation
+        rowPins[row].port->BSRR = rowPins[row].pin;  // Set row high
+        colPins[col].port->BSRR = (uint32_t)colPins[col].pin << 16U;  // Reset column (set low)
     }
     
     // Re-enable interrupts
@@ -180,14 +180,15 @@ void ArrayDriver::setAllElectrodesLow() {
     // Disable interrupts for bulk operation
     __disable_irq();
     
-    // Set all rows LOW
+    // To drive electrodes LOW: Rows HIGH, Columns LOW
+    // Set all rows HIGH
     for (uint8_t row = 0; row < NUM_ROWS; row++) {
-        rowPins[row].port->BSRR = (uint32_t)rowPins[row].pin << 16U;
+        rowPins[row].port->BSRR = rowPins[row].pin;
     }
     
-    // Set all columns HIGH
+    // Set all columns LOW
     for (uint8_t col = 0; col < NUM_COLS; col++) {
-        colPins[col].port->BSRR = colPins[col].pin;
+        colPins[col].port->BSRR = (uint32_t)colPins[col].pin << 16U;
     }
     
     __enable_irq();
@@ -205,14 +206,15 @@ void ArrayDriver::setAllElectrodesHigh() {
     // Disable interrupts for bulk operation
     __disable_irq();
     
-    // Set all rows HIGH
+    // To drive electrodes HIGH: Rows LOW, Columns HIGH
+    // Set all rows LOW
     for (uint8_t row = 0; row < NUM_ROWS; row++) {
-        rowPins[row].port->BSRR = rowPins[row].pin;
+        rowPins[row].port->BSRR = (uint32_t)rowPins[row].pin << 16U;
     }
     
-    // Set all columns LOW
+    // Set all columns HIGH
     for (uint8_t col = 0; col < NUM_COLS; col++) {
-        colPins[col].port->BSRR = (uint32_t)colPins[col].pin << 16U;
+        colPins[col].port->BSRR = colPins[col].pin;
     }
     
     __enable_irq();
